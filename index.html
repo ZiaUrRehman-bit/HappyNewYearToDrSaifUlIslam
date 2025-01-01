@@ -1,110 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy New Year, Dr. Saif!</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      color: #fff;
-      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year - Dr. Saif Ul Islam</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
 
-    .container {
-      text-align: center;
-      padding: 50px;
-    }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
 
-    h1 {
-      font-size: 3em;
-      margin-bottom: 0.5em;
-      animation: fadeIn 3s ease-in-out;
-    }
+        .message {
+            z-index: 10;
+            text-align: center;
+            animation: fadeIn 5s;
+        }
 
-    p {
-      font-size: 1.5em;
-      margin-bottom: 2em;
-      animation: fadeIn 4s ease-in-out;
-    }
+        .message h1 {
+            font-size: 3rem;
+            margin: 0;
+        }
 
-    .fireworks {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: -1;
-    }
+        .message p {
+            font-size: 1.5rem;
+            margin: 0;
+        }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes firework {
-      0% {
-        transform: scale(0.2);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0;
-      }
-    }
-
-    .firework {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #ffdd00, #ff4500);
-      animation: firework 2s ease-out infinite;
-      transform-origin: center;
-    }
-  </style>
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Happy New Year, Dr. Saif Ul Islam!</h1>
-    <p>
-      Wishing you a year filled with endless success, happiness, and good health. 
-      Thank you for your unwavering support, kindness, and guidance throughout my journey.
-      You inspire me every day to strive for greatness. Have a fantastic New Year!
-    </p>
-  </div>
-  <div class="fireworks">
-    <!-- Fireworks elements dynamically added via JavaScript -->
-  </div>
+    <canvas id="fireworks"></canvas>
+    <div class="message">
+        <h1>Happy New Year, Dr. Saif Ul Islam!</h1>
+        <p>Thank you for your unwavering support and guidance.<br>
+        Wishing you a year filled with joy, success, and good health!</p>
+    </div>
 
-  <script>
-    const fireworksContainer = document.querySelector('.fireworks');
+    <script>
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-    function createFirework() {
-      const firework = document.createElement('div');
-      firework.classList.add('firework');
-      const size = Math.random() * 10 + 10;
-      firework.style.width = `${size}px`;
-      firework.style.height = `${size}px`;
-      firework.style.left = `${Math.random() * window.innerWidth}px`;
-      firework.style.top = `${Math.random() * window.innerHeight}px`;
-      firework.style.animationDuration = `${Math.random() * 2 + 1}s`;
+        class Firework {
+            constructor(x, y, colors) {
+                this.x = x;
+                this.y = y;
+                this.colors = colors;
+                this.particles = [];
+                for (let i = 0; i < 100; i++) {
+                    this.particles.push({
+                        x: this.x,
+                        y: this.y,
+                        angle: Math.random() * 2 * Math.PI,
+                        speed: Math.random() * 5 + 2,
+                        radius: Math.random() * 3 + 1,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        alpha: 1,
+                    });
+                }
+            }
 
-      fireworksContainer.appendChild(firework);
+            update() {
+                this.particles.forEach(p => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.alpha -= 0.01;
+                });
+                this.particles = this.particles.filter(p => p.alpha > 0);
+            }
 
-      setTimeout(() => {
-        firework.remove();
-      }, 2000);
-    }
+            draw() {
+                this.particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+                    ctx.fillStyle = `rgba(${p.color[0]}, ${p.color[1]}, ${p.color[2]}, ${p.alpha})`;
+                    ctx.fill();
+                });
+            }
+        }
 
-    setInterval(createFirework, 200);
-  </script>
+        const fireworks = [];
+        const colors = [
+            [255, 0, 0],
+            [0, 255, 0],
+            [0, 0, 255],
+            [255, 255, 0],
+            [255, 0, 255],
+            [0, 255, 255]
+        ];
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.1) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height / 2;
+                fireworks.push(new Firework(x, y, colors));
+            }
+
+            fireworks.forEach(firework => {
+                firework.update();
+                firework.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
